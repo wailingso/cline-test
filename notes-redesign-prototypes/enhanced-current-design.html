@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Notes Interface - Evolutionary Design</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            background: #fff;
+        }
+
+        .header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .view-all {
+            color: #4a90e2;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .view-all:hover {
+            text-decoration: underline;
+        }
+
+        /* Priority Alerts Section */
+        .priority-alerts {
+            background: linear-gradient(135deg, #ff4757, #ff6b7a);
+            color: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .priority-alerts h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-items {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+
+        /* Filter Controls */
+        .filter-controls {
+            padding: 12px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 16px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background: #e9ecef;
+        }
+
+        .filter-btn.active {
+            background: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 16px;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: #4a90e2;
+            border-bottom-color: #4a90e2;
+            background: white;
+        }
+
+        /* Notes Container */
+        .notes-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        /* BAN Section Headers */
+        .ban-section {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .ban-header {
+            background: #f8f9fa;
+            padding: 8px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ban-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .ban-indicator.home { background: #28a745; }
+        .ban-indicator.mobility { background: #007bff; }
+        .ban-indicator.cross-account { background: #ffc107; }
+        .ban-indicator.misplaced { background: #dc3545; }
+
+        /* Note Items */
+        .note-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            position: relative;
+            transition: background-color 0.2s;
+        }
+
+        .note-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .note-item.misplaced {
+            border-left: 4px solid #dc3545;
+            background: #fff5f5;
+        }
+
+        .note-item.cross-ban {
+            border-left: 4px solid #ffc107;
+        }
+
+        .note-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .note-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .note-icon.technical { background: #e3f2fd; color: #1976d2; }
+        .note-icon.retention { background: #fce4ec; color: #c2185b; }
+        .note-icon.general { background: #f3e5f5; color: #7b1fa2; }
+
+        .note-meta {
+            flex: 1;
+        }
+
+        .note-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .note-timestamp {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .note-content {
+            font-size: 13px;
+            line-height: 1.4;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .note-details {
+            font-size: 12px;
+            color: #888;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .note-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .note-action {
+            color: #4a90e2;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .note-action:hover {
+            text-decoration: underline;
+        }
+
+        /* Warning Indicators */
+        .warning-indicator {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 6px 8px;
+            font-size: 11px;
+            color: #856404;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .related-notes-indicator {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 4px;
+            padding: 6px 8px;
+            font-size: 11px;
+            color: #0c5460;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Highlight keywords */
+        .highlight {
+            background: #fff3cd;
+            padding: 1px 3px;
+            border-radius: 2px;
+            font-weight: 500;
+        }
+
+        .highlight.amount { background: #d4edda; }
+        .highlight.ban { background: #cce5ff; }
+        .highlight.date { background: #f8d7da; }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+            
+            .filter-controls {
+                flex-direction: column;
+                gap: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h2>Notes</h2>
+            <a href="#" class="view-all">View All</a>
+        </div>
+
+        <!-- Priority Alerts -->
+        <div class="priority-alerts">
+            <h3>🚨 Priority Alerts</h3>
+            <div class="alert-items">
+                <div class="alert-item">⚠️ Collections Active</div>
+                <div class="alert-item">🔒 Account Restrictions</div>
+            </div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="filter-controls">
+            <button class="filter-btn active" data-filter="all">All Notes</button>
+            <button class="filter-btn" data-filter="billing">Billing</button>
+            <button class="filter-btn" data-filter="technical">Technical</button>
+            <button class="filter-btn" data-filter="retention">Retention</button>
+            <button class="filter-btn" data-filter="misplaced">Misplaced</button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="mobility">Mobility</button>
+            <button class="tab" data-tab="home">Home Solutions</button>
+        </div>
+
+        <!-- Notes Container -->
+        <div class="notes-container">
+            <!-- Home Solutions BAN Section -->
+            <div class="ban-section" data-ban="home">
+                <div class="ban-header">
+                    <div class="ban-indicator home"></div>
+                    Home Solutions (BAN 602002345)
+                </div>
+
+                <!-- Technical Support Note -->
+                <div class="note-item" data-category="technical">
+                    <div class="note-header">
+                        <div class="note-icon technical">🔧</div>
+                        <div class="note-meta">
+                            <div class="note-title">Technical Support</div>
+                            <div class="note-timestamp">x359274 at 11:15 AM PST • Jun 16, 2025</div>
+                        </div>
+                    </div>
+                    
+                    <div class="related-notes-indicator">
+                        🔗 Related to 2 other technical notes
+                    </div>
+                    
+                    <div class="note-content">
+                        *** PFTS - Mel *** <br>
+                        Cx is calling for his neighbor as he has no home phone. 
+                        Checked outages and found near the location but informed I am unable to check further since I do not have access to his account. Cx asked to check his account to see if there is any outage. Verified the account via PIN and confirmed that there is no outage in his account. Cx got a phone number for his neighbor in order for me to call him however he provided a wrong number. Advised for that Cx to contact us so we can help him directly instead. Cx understood
+                    </div>
+                    
+                    <div class="note-details">
+                        <span><span class="highlight ban">BAN 602002345</span></span>
+                        <div class="note-actions">
+                            <a href="#" class="note-action">Less detail</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- General Note -->
+                <div class="note-item" data-category="general">
+                    <div class="note-header">
+                        <div class="note-icon general">📝</div>
+                        <div class="note-meta">
+                            <div class="note-title">General</div>
+                            <div class="note-timestamp">Bulk_Diary at 6:17 AM PDT • Dec 12, 2024</div>
+                        </div>
+                    </div>
+                    
+                    <div class="note-content">
+                        Customer impacted by Rewards Point Expiry on <span class="highlight date">Jan 30 2025</span>
+                    </div>
+                    
+                    <div class="note-details">
+                        <span>CID 86494423</span>
+                        <div class="note-actions">
+                            <a href="#" class="note-action">More details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobility BAN Section -->
+            <div class="ban-section" data-ban="mobility">
+                <div class="ban-header">
+                    <div class="ban-indicator mobility"></div>
+                    Mobility (BAN 86494423)
+                </div>
+
+                <!-- Retention Note -->
+                <div class="note-item" data-category="retention">
+                    <div class="note-header">
+                        <div class="note-icon retention">💝</div>
+                        <div class="note-meta">
+                            <div class="note-title">Retention</div>
+                            <div class="note-timestamp">x241409 at 5:59 PM PST • Dec 24, 2023</div>
+                        </div>
+                    </div>
+                    
+                    <div class="note-content">
+                        &#x26;#xD;<br>
+                        PFCLS-Vanessa T:* &#x26;#xD;<br>
+                        <span class="highlight ban">BAN: 602002345</span>&#x26;#xD;<br>
+                        CID: 86494423 &#x26;#xD;<br>
+                        Name: norman &#x26;#xD;<br>
+                        CBR: 604430399&#x26;#xD;<br>
+                        Verified: pin cx called in to check for bette rates offered <span class="highlight amount">hs250 unlimited $55</span> and hp for <span class="highlight amount">$9 total of $64</span> plus for 2 years - adv of etf SA and prorations eoc
+                    </div>
+                    
+                    <div class="warning-indicator">
+                        ⚠️ Note mentions different BAN (602002345) - possibly misplaced?
+                    </div>
+                    
+                    <div class="note-details">
+                        <span>CID 86494423</span>
+                        <div class="note-actions">
+                            <a href="#" class="note-action">Less detail</a>
+                            <a href="#" class="note-action">Correct BAN</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- General Note -->
+                <div class="note-item" data-category="general">
+                    <div class="note-header">
+                        <div class="note-icon general">📝</div>
+                        <div class="note-meta">
+                            <div class="note-title">General</div>
+                            <div class="note-timestamp">x273478 at 5:46 PM PST • Dec 24, 2023</div>
+                        </div>
+                    </div>
+                    
+                    <div class="note-content">
+                        Issue<br>
+                        Called to inquire about the bill.<br>
+                        Outcome...
+                    </div>
+                    
+                    <div class="note-details">
+                        <span><span class="highlight ban">BAN 602002345</span></span>
+                        <div class="note-actions">
+                            <a href="#" class="note-action">More details</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Another Retention Note -->
+                <div class="note-item" data-category="retention">
+                    <div class="note-header">
+                        <div class="note-icon retention">💝</div>
+                        <div class="note-meta">
+                            <div class="note-title">Retention</div>
+                            <div class="note-timestamp">x227663 at 5:17 PM PST • May 22, 2023</div>
+                        </div>
+                    </div>
+                    
+                    <div class="note-content">
+                        FIFA/COPPER CLS&#x26;#xD;
+                    </div>
+                    
+                    <div class="note-details">
+                        <span>CID 86494423</span>
+                        <div class="note-actions">
+                            <a href="#" class="note-action">More details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cross-Account Issues Section -->
+            <div class="ban-section" data-ban="cross-account">
+                <div class="ban-header">
+                    <div class="ban-indicator cross-account"></div>
+                    Cross-Account Issues
+                </div>
+
+                <!-- Cross-Account Billing Note -->
+                <div class="note-item cross-ban" data-category="billing">
+                    <div class="note-header">
+                        <div class="note-icon general">💳</div>
+                        <div class="note-meta">
+                            <div class="note-title">Billing Consolidation</div>
+                            <div class="note-timestamp">x445521 at 2:30 PM PST • Jun 15, 2025</div>
+                        </div>
+                    </div>
+                    
+                    <div class="related-notes-indicator">
+                        🔗 Affects multiple BANs: 602002345, 86494423
+                    </div>
+                    
+                    <div class="note-content">
+                        Customer requested billing consolidation for all services. Combined <span class="highlight amount">$89.99</span> Home Solutions and <span class="highlight amount">$75.00</span> Mobility into single bill. New total: <span class="highlight amount">$164.99</span> monthly.
+                    </div>
+                    
+                    <div class="note-details">
+                        <span>Affects: <span class="highlight ban">BAN 602002345</span>, <span class="highlight ban">BAN 86494423</span></span>
+                        <div class="note-actions">
+                            <a href="#" class="note-action">View impact</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Potentially Misplaced Section -->
+            <div class="ban-section" data-ban="misplaced">
+                <div class="ban-header">
+                    <div class="ban-indicator misplaced"></div>
+                    Potentially Misplaced Notes (2)
+                </div>
+
+                <!-- Misplaced Note Example -->
+                <div class="note-item misplaced" data-category="technical">
+                    <div class="note-header">
+                        <div class="note-icon technical">🔧</div>
+                        <div class="note-meta">
+                            <div class="note-title">Technical Support</div>
+                            <div class="note-timestamp">x998877 at 9:15 AM PST • Jun 14, 2025</div>
+                        </div>
+                    </div>
+                    
+                    <div class="warning-indicator">
+                        ⚠️ Filed under Mobility but mentions Home Solutions services
+                    </div>
+                    
+                    <div class="note-content">
+                        Customer experiencing internet connectivity issues. Modem reset performed. <span class="highlight">Internet service</span> restored. Customer satisfied with resolution.
+                    </div>
+                    
+                    <div class="note-details">
+                        <span>Filed under: Mobility | Should be: Home Solutions</span>
+                        <div class="note-actions">
+                            <a href="#" class="note-action">Move to correct BAN</a>
+                            <a href="#" class="note-action">Keep here</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                const filter = this.dataset.filter;
+                const notes = document.querySelectorAll('.note-item');
+                const banSections = document.querySelectorAll('.ban-section');
+                
+                if (filter === 'all') {
+                    notes.forEach(note => note.style.display = 'block');
+                    banSections.forEach(section => section.style.display = 'block');
+                } else if (filter === 'misplaced') {
+                    banSections.forEach(section => {
+                        if (section.dataset.ban === 'misplaced') {
+                            section.style.display = 'block';
+                        } else {
+                            section.style.display = 'none';
+                        }
+                    });
+                } else {
+                    banSections.forEach(section => section.style.display = 'block');
+                    notes.forEach(note => {
+                        if (note.dataset.category === filter) {
+                            note.style.display = 'block';
+                        } else {
+                            note.style.display = 'none';
+                        }
+                    });
+                }
+            });
+        });
+
+        // Tab functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                const selectedTab = this.dataset.tab;
+                const banSections = document.querySelectorAll('.ban-section');
+                
+                banSections.forEach(section => {
+                    const banType = section.dataset.ban;
+                    if (selectedTab === 'mobility' && (banType === 'mobility' || banType === 'cross-account' || banType === 'misplaced')) {
+                        section.style.display = 'block';
+                    } else if (selectedTab === 'home' && (banType === 'home' || banType === 'cross-account' || banType === 'misplaced')) {
+                        section.style.display = 'block';
+                    } else {
+                        section.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Note action handlers
+        document.querySelectorAll('.note-action').forEach(action => {
+            action.addEventListener('click', function(e) {
+                e.preventDefault();
+                const actionText = this.textContent;
+                
+                if (actionText.includes('Correct BAN')) {
+                    alert('BAN correction workflow would open here');
+                } else if (actionText.includes('Move to correct BAN')) {
+                    alert('Note would be moved to Home Solutions BAN');
+                } else if (actionText.includes('View impact')) {
+                    alert('Cross-BAN impact analysis would open here');
+                } else {
+                    alert(`${actionText} action triggered`);
+                }
+            });
+        });
+
+        // Initialize with Mobility tab active
+        document.querySelector('[data-tab="mobility"]').click();
+    </script>
+</body>
+</html>
