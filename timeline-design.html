@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timeline Notes Interface - Revolutionary Design</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 420px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            background: #fff;
+        }
+
+        .header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .view-all {
+            color: #4a90e2;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .view-all:hover {
+            text-decoration: underline;
+        }
+
+        /* Priority Alerts Section */
+        .priority-alerts {
+            background: linear-gradient(135deg, #ff4757, #ff6b7a);
+            color: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .priority-alerts h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-items {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+
+        /* Smart Controls */
+        .smart-controls {
+            padding: 12px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .view-toggle {
+            display: flex;
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #ddd;
+            overflow: hidden;
+        }
+
+        .view-btn {
+            padding: 6px 12px;
+            border: none;
+            background: none;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .view-btn.active {
+            background: #4a90e2;
+            color: white;
+        }
+
+        .smart-filter {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 16px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .smart-filter:hover {
+            background: #e9ecef;
+        }
+
+        .smart-filter.active {
+            background: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+        }
+
+        /* Timeline Container */
+        .timeline-container {
+            max-height: 600px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* Timeline Line */
+        .timeline-line {
+            position: absolute;
+            left: 45px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #4a90e2, #e0e0e0);
+        }
+
+        /* Date Separators */
+        .date-separator {
+            position: sticky;
+            top: 0;
+            background: #f8f9fa;
+            padding: 8px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            z-index: 10;
+        }
+
+        /* Timeline Items */
+        .timeline-item {
+            position: relative;
+            padding: 16px 20px 16px 70px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+        }
+
+        .timeline-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .timeline-item.priority {
+            background: linear-gradient(90deg, #fff5f5, #ffffff);
+            border-left: 4px solid #ff4757;
+        }
+
+        .timeline-item.cross-account {
+            background: linear-gradient(90deg, #fff9e6, #ffffff);
+            border-left: 4px solid #ffc107;
+        }
+
+        .timeline-item.misplaced {
+            background: linear-gradient(90deg, #fff5f5, #ffffff);
+            border-left: 4px solid #dc3545;
+        }
+
+        /* Timeline Dots */
+        .timeline-dot {
+            position: absolute;
+            left: 36px;
+            top: 20px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .timeline-dot.technical { background: #1976d2; color: white; }
+        .timeline-dot.retention { background: #c2185b; color: white; }
+        .timeline-dot.general { background: #7b1fa2; color: white; }
+        .timeline-dot.billing { background: #388e3c; color: white; }
+        .timeline-dot.priority { background: #ff4757; color: white; }
+
+        /* Note Content */
+        .note-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .note-title-group {
+            flex: 1;
+        }
+
+        .note-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .note-subtitle {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ban-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .ban-badge.home { background: #e8f5e8; color: #2e7d32; }
+        .ban-badge.mobility { background: #e3f2fd; color: #1976d2; }
+        .ban-badge.cross { background: #fff3e0; color: #f57c00; }
+
+        .note-time {
+            font-size: 11px;
+            color: #999;
+            white-space: nowrap;
+        }
+
+        .note-content {
+            font-size: 13px;
+            line-height: 1.4;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        /* Smart Indicators */
+        .smart-indicators {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .smart-indicator {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .smart-indicator.related {
+            background: #e1f5fe;
+            color: #0277bd;
+        }
+
+        .smart-indicator.warning {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .smart-indicator.suggestion {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        /* Connection Lines */
+        .connection-line {
+            position: absolute;
+            left: 45px;
+            width: 2px;
+            background: #ffc107;
+            z-index: 5;
+        }
+
+        .connection-line.billing {
+            background: #4caf50;
+        }
+
+        .connection-line.technical {
+            background: #2196f3;
+        }
+
+        /* Note Actions */
+        .note-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .note-action {
+            color: #4a90e2;
+            text-decoration: none;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .note-action:hover {
+            text-decoration: underline;
+        }
+
+        /* Highlight keywords */
+        .highlight {
+            background: #fff3cd;
+            padding: 1px 3px;
+            border-radius: 2px;
+            font-weight: 500;
+        }
+
+        .highlight.amount { background: #d4edda; }
+        .highlight.ban { background: #cce5ff; }
+        .highlight.date { background: #f8d7da; }
+
+        /* Expandable Content */
+        .expandable-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .expandable-content.expanded {
+            max-height: 200px;
+        }
+
+        /* Search Results Highlighting */
+        .search-highlight {
+            background: #ffeb3b;
+            padding: 1px 2px;
+            border-radius: 2px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+            
+            .smart-controls {
+                flex-direction: column;
+                gap: 8px;
+                align-items: stretch;
+            }
+            
+            .timeline-item {
+                padding-left: 60px;
+            }
+            
+            .timeline-line {
+                left: 35px;
+            }
+            
+            .timeline-dot {
+                left: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h2>Customer Story</h2>
+            <a href="#" class="view-all">View All</a>
+        </div>
+
+        <!-- Priority Alerts -->
+        <div class="priority-alerts">
+            <h3>🚨 Priority Alerts</h3>
+            <div class="alert-items">
+                <div class="alert-item">⚠️ Collections Active</div>
+                <div class="alert-item">🔒 Account Restrictions</div>
+            </div>
+        </div>
+
+        <!-- Smart Controls -->
+        <div class="smart-controls">
+            <div class="view-toggle">
+                <button class="view-btn active" data-view="timeline">Timeline</button>
+                <button class="view-btn" data-view="grouped">Grouped</button>
+            </div>
+            <button class="smart-filter active" data-filter="all">All</button>
+            <button class="smart-filter" data-filter="billing">Billing Chain</button>
+            <button class="smart-filter" data-filter="technical">Technical</button>
+            <button class="smart-filter" data-filter="misplaced">Issues</button>
+        </div>
+
+        <!-- Timeline Container -->
+        <div class="timeline-container">
+            <div class="timeline-line"></div>
+
+            <!-- Today -->
+            <div class="date-separator">Today - June 19, 2025</div>
+
+            <!-- Recent Technical Note -->
+            <div class="timeline-item" data-category="technical" data-date="2025-06-16">
+                <div class="timeline-dot technical">🔧</div>
+                <div class="note-header">
+                    <div class="note-title-group">
+                        <div class="note-title">
+                            Technical Support
+                            <span class="ban-badge home">Home</span>
+                        </div>
+                        <div class="note-subtitle">
+                            x359274 • <span class="highlight ban">BAN 602002345</span>
+                        </div>
+                    </div>
+                    <div class="note-time">11:15 AM</div>
+                </div>
+
+                <div class="smart-indicators">
+                    <div class="smart-indicator related">🔗 Part of 3-note technical thread</div>
+                </div>
+
+                <div class="note-content">
+                    *** PFTS - Mel *** Customer calling for neighbor with no home phone. Checked outages near location but unable to access neighbor's account. Verified customer's account via PIN - no outages found. Customer provided wrong number for neighbor callback. Advised customer to have neighbor contact us directly.
+                </div>
+
+                <div class="note-actions">
+                    <a href="#" class="note-action">📋 View thread</a>
+                    <a href="#" class="note-action">🔍 Related notes</a>
+                </div>
+            </div>
+
+            <!-- Cross-Account Billing -->
+            <div class="timeline-item cross-account" data-category="billing" data-date="2025-06-15">
+                <div class="timeline-dot billing">💳</div>
+                <div class="note-header">
+                    <div class="note-title-group">
+                        <div class="note-title">
+                            Billing Consolidation
+                            <span class="ban-badge cross">Multi-BAN</span>
+                        </div>
+                        <div class="note-subtitle">
+                            x445521 • Affects both accounts
+                        </div>
+                    </div>
+                    <div class="note-time">2:30 PM</div>
+                </div>
+
+                <div class="smart-indicators">
+                    <div class="smart-indicator related">🔗 Billing chain: 3 related notes</div>
+                    <div class="smart-indicator suggestion">💡 May affect future billing notes</div>
+                </div>
+
+                <div class="note-content">
+                    Customer requested billing consolidation. Combined <span class="highlight amount">$89.99</span> Home Solutions and <span class="highlight amount">$75.00</span> Mobility. New total: <span class="highlight amount">$164.99</span> monthly starting next cycle.
+                </div>
+
+                <div class="note-actions">
+                    <a href="#" class="note-action">📊 View billing impact</a>
+                    <a href="#" class="note-action">🔗 Related billing notes</a>
+                </div>
+            </div>
+
+            <!-- Yesterday -->
+            <div class="date-separator">Yesterday - June 18, 2025</div>
+
+            <!-- Misplaced Note -->
+            <div class="timeline-item misplaced" data-category="technical" data-date="2025-06-14">
+                <div class="timeline-dot technical">🔧</div>
+                <div class="note-header">
+                    <div class="note-title-group">
+                        <div class="note-title">
+                            Technical Support
+                            <span class="ban-badge mobility">Mobility</span>
+                        </div>
+                        <div class="note-subtitle">
+                            x998877 • Filed incorrectly
+                        </div>
+                    </div>
+                    <div class="note-time">9:15 AM</div>
+                </div>
+
+                <div class="smart-indicators">
+                    <div class="smart-indicator warning">⚠️ Mentions Home Solutions but filed under Mobility</div>
+                    <div class="smart-indicator suggestion">💡 Suggest move to Home BAN</div>
+                </div>
+
+                <div class="note-content">
+                    Customer experiencing <span class="highlight">internet connectivity</span> issues. Modem reset performed. <span class="highlight">Internet service</span> restored. Customer satisfied with resolution.
+                </div>
+
+                <div class="note-actions">
+                    <a href="#" class="note-action">🔄 Move to correct BAN</a>
+                    <a href="#" class="note-action">✅ Keep here</a>
+                </div>
+            </div>
+
+            <!-- December 2024 -->
+            <div class="date-separator">December 2024</div>
+
+            <!-- General Note -->
+            <div class="timeline-item" data-category="general" data-date="2024-12-12">
+                <div class="timeline-dot general">📝</div>
+                <div class="note-header">
+                    <div class="note-title-group">
+                        <div class="note-title">
+                            Rewards Point Expiry
+                            <span class="ban-badge home">Home</span>
+                        </div>
+                        <div class="note-subtitle">
+                            Bulk_Diary • System Generated
+                        </div>
+                    </div>
+                    <div class="note-time">6:17 AM</div>
+                </div>
+
+                <div class="note-content">
+                    Customer impacted by Rewards Point Expiry on <span class="highlight date">Jan 30 2025</span>
+                </div>
+
+                <div class="note-actions">
+                    <a href="#" class="note-action">📋 More details</a>
+                </div>
+            </div>
+
+            <!-- Retention Notes -->
+            <div class="timeline-item" data-category="retention" data-date="2023-12-24">
+                <div class="timeline-dot retention">💝</div>
+                <div class="note-header">
+                    <div class="note-title-group">
+                        <div class="note-title">
+                            Retention Call
+                            <span class="ban-badge mobility">Mobility</span>
+                        </div>
+                        <div class="note-subtitle">
+                            x241409 • <span class="highlight ban">BAN 86494423</span>
+                        </div>
+                    </div>
+                    <div class="note-time">5:59 PM</div>
+                </div>
+
+                <div class="smart-indicators">
+                    <div class="smart-indicator warning">⚠️ References different BAN (602002345)</div>
+                </div>
+
+                <div class="note-content">
+                    PFCLS-Vanessa T: Customer called to check for better rates. Offered <span class="highlight amount">hs250 unlimited $55</span> and hp for <span class="highlight amount">$9 total of $64</span> plus for 2 years. Advised of ETF, SA and prorations EOC.
+                </div>
+
+                <div class="expandable-content" id="retention-details">
+                    <div style="margin-top: 8px; padding: 8px; background: #f8f9fa; border-radius: 4px; font-size: 12px;">
+                        <strong>Full Details:</strong><br>
+                        BAN: 602002345<br>
+                        CID: 86494423<br>
+                        Name: norman<br>
+                        CBR: 604430399<br>
+                        Verified: PIN
+                    </div>
+                </div>
+
+                <div class="note-actions">
+                    <a href="#" class="note-action" onclick="toggleExpand('retention-details')">📋 Full details</a>
+                    <a href="#" class="note-action">🔄 Correct BAN</a>
+                </div>
+            </div>
+
+            <!-- General Issue -->
+            <div class="timeline-item" data-category="general" data-date="2023-12-24">
+                <div class="timeline-dot general">📝</div>
+                <div class="note-header">
+                    <div class="note-title-group">
+                        <div class="note-title">
+                            Billing Inquiry
+                            <span class="ban-badge home">Home</span>
+                        </div>
+                        <div class="note-subtitle">
+                            x273478 • <span class="highlight ban">BAN 602002345</span>
+                        </div>
+                    </div>
+                    <div class="note-time">5:46 PM</div>
+                </div>
+
+                <div class="smart-indicators">
+                    <div class="smart-indicator related">🔗 Part of billing inquiry chain</div>
+                </div>
+
+                <div class="note-content">
+                    Issue: Called to inquire about the bill.<br>
+                    Outcome: [Details truncated]
+                </div>
+
+                <div class="note-actions">
+                    <a href="#" class="note-action">📋 More details</a>
+                    <a href="#" class="note-action">🔗 Related billing notes</a>
+                </div>
+            </div>
+
+            <!-- Older Retention -->
+            <div class="timeline-item" data-category="retention" data-date="2023-05-22">
+                <div class="timeline-dot retention">💝</div>
+                <div class="note-header">
+                    <div class="note-title-group">
+                        <div class="note-title">
+                            Retention
+                            <span class="ban-badge mobility">Mobility</span>
+                        </div>
+                        <div class="note-subtitle">
+                            x227663 • CID 86494423
+                        </div>
+                    </div>
+                    <div class="note-time">5:17 PM</div>
+                </div>
+
+                <div class="note-content">
+                    FIFA/COPPER CLS
+                </div>
+
+                <div class="note-actions">
+                    <a href="#" class="note-action">📋 More details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // View toggle functionality
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const view = this.dataset.view;
+                if (view === 'grouped') {
+                    // Switch to grouped view (could redirect to enhanced design)
+                    alert('Grouped view would show BAN-organized layout');
+                }
+            });
+        });
+
+        // Smart filter functionality
+        document.querySelectorAll('.smart-filter').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.smart-filter').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const filter = this.dataset.filter;
+                const items = document.querySelectorAll('.timeline-item');
+                const separators = document.querySelectorAll('.date-separator');
+                
+                if (filter === 'all') {
+                    items.forEach(item => item.style.display = 'block');
+                    separators.forEach(sep => sep.style.display = 'block');
+                } else if (filter === 'billing') {
+                    // Show billing chain
+                    items.forEach(item => {
+                        const category = item.dataset.category;
+                        const content = item.textContent.toLowerCase();
+                        if (category === 'billing' || content.includes('billing') || content.includes('$')) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                } else if (filter === 'misplaced') {
+                    // Show only misplaced notes
+                    items.forEach(item => {
+                        if (item.classList.contains('misplaced') || 
+                            item.querySelector('.smart-indicator.warning')) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                } else {
+                    // Filter by category
+                    items.forEach(item => {
+                        if (item.dataset.category === filter) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                }
+            });
+        });
+
+        // Note action handlers
+        document.querySelectorAll('.note-action').forEach(action => {
+            action.addEventListener('click', function(e) {
+                e.preventDefault();
+                const actionText = this.textContent;
+                
+                if (actionText.includes('View thread')) {
+                    alert('Technical support thread view would open');
+                } else if (actionText.includes('Related notes')) {
+                    alert('Related notes panel would open');
+                } else if (actionText.includes('billing impact')) {
+                    alert('Cross-BAN billing impact analysis would open');
+                } else if (actionText.includes('Move to correct BAN')) {
+                    alert('Note would be moved to Home Solutions BAN');
+                } else if (actionText.includes('Correct BAN')) {
+                    alert('BAN correction workflow would open');
+                } else {
+                    alert(`${actionText} action triggered`);
+                }
+            });
+        });
+
+        // Expandable content toggle
+        function toggleExpand(elementId) {
+            const element = document.getElementById(elementId);
+            element.classList.toggle('expanded');
+        }
+
+        // Simulate smart relationship detection
+        function highlightRelatedNotes(category) {
+            const items = document.querySelectorAll('.timeline-item');
+            items.forEach(item => {
+                if (item.dataset.category === category) {
+                    item.style.background = '#e3f2fd';
+                    setTimeout(() => {
+                        item.style.background = '';
+                    }, 2000);
+                }
+            });
+        }
+
+        // Add connection lines for related notes
+        function drawConnectionLines() {
+            // This would be implemented with more sophisticated logic
+            // to draw visual connections between related notes
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add any initialization logic here
+            console.log('Timeline interface loaded');
+        });
+    </script>
+</body>
+</html>

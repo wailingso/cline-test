@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes Interface Redesign Prototypes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .prototypes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        .prototype-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .prototype-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .prototype-header {
+            margin-bottom: 20px;
+        }
+
+        .prototype-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .prototype-subtitle {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .prototype-description {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 25px;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .features-list li {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .features-list li::before {
+            content: "✓";
+            background: #4a90e2;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .prototype-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .prototype-button:hover {
+            background: linear-gradient(135deg, #357abd, #2968a3);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+        }
+
+        .comparison-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .comparison-title {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .comparison-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .comparison-item h3 {
+            color: white;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .comparison-item p {
+            color: rgba(255,255,255,0.9);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .footer {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .prototypes {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Notes Interface Redesign</h1>
+            <p>Two innovative approaches to solving agent pain points: relationship tracking, data quality issues, and priority alert management</p>
+        </div>
+
+        <div class="prototypes">
+            <!-- Enhanced Current Design -->
+            <div class="prototype-card">
+                <div class="prototype-header">
+                    <h2 class="prototype-title">Enhanced Current Design</h2>
+                    <p class="prototype-subtitle">Evolutionary Approach</p>
+                </div>
+                
+                <p class="prototype-description">
+                    Builds upon the existing tabbed interface while adding smart features to address data quality issues and improve note relationships. Maintains familiar workflow while introducing powerful new capabilities.
+                </p>
+
+                <ul class="features-list">
+                    <li>Priority alert banner for fraud, deceased, collections</li>
+                    <li>Smart BAN organization with visual indicators</li>
+                    <li>Misplaced note detection and correction suggestions</li>
+                    <li>Enhanced filtering by category and context</li>
+                    <li>Cross-BAN relationship indicators</li>
+                    <li>Keyword highlighting for amounts, dates, BANs</li>
+                    <li>Improved visual hierarchy and scanability</li>
+                </ul>
+
+                <a href="enhanced-current-design.html" class="prototype-button">View Enhanced Design</a>
+            </div>
+
+            <!-- Timeline Design -->
+            <div class="prototype-card">
+                <div class="prototype-header">
+                    <h2 class="prototype-title">Timeline Design</h2>
+                    <p class="prototype-subtitle">Revolutionary Approach</p>
+                </div>
+                
+                <p class="prototype-description">
+                    Completely reimagines the interface as a unified customer story timeline. Eliminates tabs in favor of chronological organization with smart grouping and contextual intelligence.
+                </p>
+
+                <ul class="features-list">
+                    <li>Unified timeline view with chronological organization</li>
+                    <li>Smart indicators for related notes and issues</li>
+                    <li>Visual timeline with connection lines</li>
+                    <li>Contextual BAN badges and service indicators</li>
+                    <li>Advanced filtering: billing chains, technical threads</li>
+                    <li>Progressive disclosure with expandable details</li>
+                    <li>AI-powered relationship detection</li>
+                </ul>
+
+                <a href="timeline-design.html" class="prototype-button">View Timeline Design</a>
+            </div>
+        </div>
+
+        <div class="comparison-section">
+            <h2 class="comparison-title">Key Problem Solutions</h2>
+            <div class="comparison-grid">
+                <div class="comparison-item">
+                    <h3>🔗 Note Relationships</h3>
+                    <p>Both designs introduce visual connections between related notes, making it easy to follow billing changes, technical issues, and retention conversations across time and BANs.</p>
+                </div>
+                
+                <div class="comparison-item">
+                    <h3>⚠️ Data Quality</h3>
+                    <p>Smart detection of misplaced notes with correction suggestions. Highlights when notes reference different BANs than where they're filed, reducing agent confusion.</p>
+                </div>
+                
+                <div class="comparison-item">
+                    <h3>🚨 Priority Alerts</h3>
+                    <p>Dedicated alert sections ensure fraud, deceased customer, and collections information is immediately visible to agents, improving compliance and customer safety.</p>
+                </div>
+                
+                <div class="comparison-item">
+                    <h3>🏦 BAN Context</h3>
+                    <p>Clear visual organization by account type with cross-BAN impact indicators. Agents can quickly understand which services are affected by changes.</p>
+                </div>
+                
+                <div class="comparison-item">
+                    <h3>🔍 Enhanced Scanning</h3>
+                    <p>Improved typography, keyword highlighting, and structured information display make it easier to quickly extract key details from poorly written notes.</p>
+                </div>
+                
+                <div class="comparison-item">
+                    <h3>⚡ Smart Filtering</h3>
+                    <p>Advanced filtering options allow agents to focus on specific types of issues (billing chains, technical threads) or identify data quality problems.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Interactive prototypes demonstrating solutions for call center agent workflow improvements</p>
+        </div>
+    </div>
+</body>
+</html>
